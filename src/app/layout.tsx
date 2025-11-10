@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 
 import { ProfileProvider } from "@/contexts/profileContext";
 
-import { Profile } from "@/types/profile";
+import { Profile, profileSelectorString } from "@/types/profile";
 
 export const metadata: Metadata = {
   title: "Exploration 4",
@@ -19,31 +19,35 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <ProfileProvider profile={await getProfile()}>
-        <body>{children}</body>
+        <body>
+          {children}
+        </body>
       </ProfileProvider>
-      
     </html>
   );
 
-  async function getProfile() : Promise<Profile | undefined> {
-      
+
+  async function getProfile(): Promise<Profile | undefined> {
     const supabase = await createClient()
 
     const user = await supabase.auth.getUser()
-    // console.log(data.user?.email)
+
+    if(!user || !user.data.user){
+      return undefined
+    }
 
     const data = await supabase
       .from('profiles')
-      .select()
+      .select(profileSelectorString)
       .eq('id', user.data.user?.id)
     
-    console.log(data.data)
+    let profile: Profile | undefined = undefined
 
-    let profile = undefined
-
-    if(data.data && data.data.length > 0){
+    if(data.data && data.data.length > 0) {
       profile = data.data[0]
     }
+
+    console.log(profile)
     
     return profile
   }
