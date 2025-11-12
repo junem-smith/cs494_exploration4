@@ -6,17 +6,38 @@ import { Profile } from "@/types/profile"
 // data structure
 type ProfileProps = {
     profile: Profile | undefined,
-
+    updateProfile: (profile: Profile, avatar: File | undefined) => void
 }
 
 // create context
 const ProfileContext = createContext<ProfileProps | undefined>(undefined)
 
 // provider
-export function ProfileProvider(props: {profile: Profile | undefined, children: React.ReactNode}){
+export function ProfileProvider(props: {profile: Profile | undefined, children: React.ReactNode }) {
+
+    async function updateProfile(profile: Profile, avatar: File | undefined){
+
+        let avatarUrl: string | null = null
+        if (avatar){
+            const formData = new FormData()
+            formData.append("id", profile.id)
+            formData.append("Image", avatar)
+            const res = await fetch("/api/avatar",
+                {
+                    method: "POST",
+                    body: formData
+                }
+            )
+
+            const data = await res.json()
+            avatarUrl = data.avatarUrl
+        }
+        console.log(avatarUrl)
+        
+    }
 
     return (
-        <ProfileContext.Provider value={{profile: props.profile}}>
+        <ProfileContext.Provider value={{ profile: props.profile, updateProfile }}>
             {props.children}
         </ProfileContext.Provider>
     )

@@ -7,7 +7,7 @@ import { useState, useEffect } from "react"
 import imageCompression from "browser-image-compression"
 
 export default function Home(){
-    const { profile } = useProfile()
+    const { profile, updateProfile } = useProfile()
 
     if (!profile) return <></>
 
@@ -38,7 +38,9 @@ export default function Home(){
     }
 
     function handleSave(){
-
+        if (profile){
+            updateProfile(profile, avatar)
+        }
     }
 
     useEffect(()=>{
