@@ -44,6 +44,12 @@ export default function Home(){
     }
 
     useEffect(()=>{
+        profile.full_name = fullName
+        profile.website = website
+        updateProfile(profile, avatar)
+    },[website, fullName])
+
+    useEffect(()=>{
         if (avatar){
             const previewUrl = URL.createObjectURL(avatar)
             console.log(avatar)

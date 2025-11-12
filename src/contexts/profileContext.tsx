@@ -32,7 +32,15 @@ export function ProfileProvider(props: {profile: Profile | undefined, children: 
             const data = await res.json()
             avatarUrl = data.avatarUrl
         }
-        console.log(avatarUrl)
+
+        if (avatarUrl){
+            profile.avatar_url = avatarUrl
+        }
+        
+        const res = await fetch("/api/profile", {
+            method: "PUT",
+            body: JSON.stringify({profile: profile})
+        })
         
     }
 
