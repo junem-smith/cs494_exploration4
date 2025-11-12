@@ -7,4 +7,4 @@ export type Profile = {
 }
 
 
-export const profileSelectorString = "id, username, full_name, avater_url, website"
+export const profileSelectorString = "id, username, full_name, avatar_url, website"
