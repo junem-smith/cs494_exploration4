@@ -9,12 +9,11 @@ import imageCompression from "browser-image-compression"
 export default function Home(){
     const { profile, updateProfile } = useProfile()
 
-    if (!profile) return <></>
 
-    const [fullName, setFullName] = useState<string>(profile.full_name ?? "")
-    const [ website, setWebsite ] = useState<string>(profile.website ?? "")
+    const [fullName, setFullName] = useState<string>(profile ? profile.full_name ?? "" : "")
+    const [ website, setWebsite ] = useState<string>(profile ? profile.website ?? "" : "")
     const [ avatar, setAvatar ] = useState<File | undefined>(undefined);
-    const [ avatarUrl, setAvatarUrl ] = useState<string>(profile.avatar_url ?? "")
+    const [ avatarUrl, setAvatarUrl ] = useState<string>(profile ? profile.avatar_url ?? "" : "")
 
     async function handleAvatar(e: React.ChangeEvent<HTMLInputElement>){
         const file = e.target.files?.[0]
@@ -25,7 +24,7 @@ export default function Home(){
             fileType: 'image/webp'
         }
 
-        var controller = new AbortController();
+        const controller = new AbortController();
 
         imageCompression(file, options)
             .then((compressedFile)=>setAvatar(compressedFile))
@@ -39,15 +38,17 @@ export default function Home(){
 
     function handleSave(){
         if (profile){
+            profile.full_name = fullName
+            profile.website = website  
             updateProfile(profile, avatar)
         }
     }
 
-    useEffect(()=>{
-        profile.full_name = fullName
-        profile.website = website
-        updateProfile(profile, avatar)
-    },[website, fullName])
+    // useEffect(()=>{
+    //     profile.full_name = fullName
+    //     profile.website = website
+    //     updateProfile(profile, avatar)
+    // },[website, fullName])
 
     useEffect(()=>{
         if (avatar){
@@ -60,12 +61,14 @@ export default function Home(){
         
     },[avatar])
 
+    if (!profile) return <></>
+
     return (
         <Box sx={{ display: "grid", gap: 2, maxWidth: 300}}>
             <Avatar src={avatarUrl} sx={{ width: 100, height: 100 }}/>
             <Button variant="contained" component="label">
                 {avatar ? avatar.name : "Upload Avatar"}
-                <input type="file" hidden accept="image/*" onChange={(e => setAvatar(e.target.files?.[0]))} />
+                <input type="file" hidden accept="image/*" onChange={handleAvatar} />
             </Button>
             <TextField
                 id="email"
